@@ -1,0 +1,65 @@
+plugins {
+    id 'war'
+    // gradle lombok plugin
+    id "io.freefair.lombok" version "5.0.0-rc6"
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+	// servlet api, jsp api
+	providedCompile "javax.servlet:javax.servlet-api:4.0.+"
+	providedCompile 'javax.servlet.jsp:javax.servlet.jsp-api:2.3.+'
+	
+	// jstl (jsp standard tag libraries)
+	runtimeOnly 'org.apache.taglibs:taglibs-standard-spec:+'
+	runtimeOnly 'org.apache.taglibs:taglibs-standard-impl:+'
+	
+	// lombok
+	implementation 'org.projectlombok:lombok:1.+'
+
+	// reflections
+	implementation 'org.reflections:reflections:+'		
+}
+
+// clear
+task clear (type: Delete) {
+	delete 'build','dist'
+}
+
+// make dist/WEB-INF/classes
+task makeclasses(dependsOn:compileJava, type:Copy) {
+	from 'build/classes/java/main'
+	from 'src/main/resources'
+	into 'dist/WEB-INF/classes'
+}
+
+// make dist/WEB-INF/lib
+task makelib(type:Sync) {
+	from configurations.runtimeClasspath.minus(configurations.providedCompile)
+	into 'dist/WEB-INF/lib'
+}
+
+// make dist web
+task makeweb(type: Copy) {
+	from 'src/main/webapp'
+	into 'dist'
+}
+
+// make dist full
+task makedist(dependsOn: [makeclasses, makelib, makeweb])
+
+// dist web
+task distweb(dependsOn:makeweb, type:Copy) {
+	from ('dist') {exclude 'META-INF', 'WEB-INF' }
+	from ('dist') {include 'WEB-INF/jsp/**' }
+	into "$target"
+}
+
+// dist full
+task dist(dependsOn:makedist, type:Sync) {
+	from 'dist'
+	into "$target"
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+	<Resource name="jdbc/jdbc"
+		factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+		type="javax.sql.DataSource" driverClassName="org.mariadb.jdbc.Driver"
+		url="jdbc:mariadb://irafe.com:3306/jdbc" username="jdbc"
+		password="javaprogramming" initialSize="1" minIdle="1" maxActive="2"
+		maxIdle="2" testWhileIdle="true" validationQuery="SELECT 1" />
+</Context>
